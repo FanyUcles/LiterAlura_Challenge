@@ -87,7 +87,7 @@ public class Principal implements CommandLineRunner {
     }
 
     private void buscarLibroPorTitulo() {
-        System.out.println("Ingrese el título del libro:");
+        System.out.println("Ingrese el título del libro que desea buscar:");
         String titulo = SCANNER.nextLine();
         String tituloCodificado = URLEncoder.encode(titulo, StandardCharsets.UTF_8);
         String url = URL_BASE + URL_SEARCH_BY_NAME + tituloCodificado;
@@ -107,7 +107,6 @@ public class Principal implements CommandLineRunner {
             libroRepository.save(libro);
         });
 
-        // Mostrar los datos de una forma más legible
         libros.forEach(libro -> System.out.println("Título: " + libro.getTitulo() + ", Autor: " + libro.getAutor().getNombre()));
     }
 
@@ -133,7 +132,7 @@ public class Principal implements CommandLineRunner {
     }
 
     private void listarLibrosPorIdioma() {
-        System.out.println("Ingrese el idioma (por ejemplo: 'en' para inglés):");
+        System.out.println("Ingrese el idioma (por ejemplo: 'en' para inglés): ");
         String idioma = SCANNER.nextLine();
         List<Libro> libros = libroRepository.findByIdioma(idioma);
         libros.forEach(libro -> System.out.println(libro.getTitulo() + " - Autor: " + libro.getAutor().getNombre()));
