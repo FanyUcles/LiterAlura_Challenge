@@ -2,29 +2,26 @@ package com.alura.Challenge_Literalura.Principal;
 
 import com.alura.Challenge_Literalura.model.Autor;
 import com.alura.Challenge_Literalura.model.Libro;
-import com.alura.Challenge_Literalura.model.ResponseLibros;
 import com.alura.Challenge_Literalura.repositorio.AutorRepository;
 import com.alura.Challenge_Literalura.repositorio.LibroRepository;
 import com.alura.Challenge_Literalura.service.ConsumoAPI;
 import com.alura.Challenge_Literalura.service.ConvierteDatos;
-import com.alura.Challenge_Literalura.service.IConvierteDatos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-@SpringBootApplication
-public class Principal implements CommandLineRunner {
-    private static final Scanner SCANNER = new Scanner(System.in);
-    private static int option = -1;
+@Component
+public class Principal implements CommandLineRunner{
 
-    private final String URL_BASE = "https://gutendex.com/books/";
-    private final String URL_SEARCH_BY_NAME = "?search=";
+    private final Scanner scanner = new Scanner(System.in);
+    private static final String URL_BASE = "https://gutendex.com/books/";
+    private static final String URL_SEARCH_BY_NAME = "?search=";
 
     @Autowired
     private LibroRepository libroRepository;
@@ -32,21 +29,21 @@ public class Principal implements CommandLineRunner {
     @Autowired
     private AutorRepository autorRepository;
 
-    private final IConvierteDatos conversor = new ConvierteDatos();
-    private final ConsumoAPI consumoAPI = new ConsumoAPI();
+    @Autowired
+    private ConsumoAPI consumoAPI;
 
-    public static void main(String[] args) {
-        SpringApplication.run(Principal.class, args);
-    }
+    @Autowired
+    private ConvierteDatos conversor;
 
     @Override
     public void run(String... args) {
-        app();
+        mostrarMenu();
     }
 
-    public void app() {
-        while (option != 0) {
-            String MENU = """
+    public void mostrarMenu() {
+        int opcion = -1;
+        while (opcion != 0) {
+            System.out.println("""
                     Selecciona la opción ingresando el número correspondiente:
                     1 - Buscar libro por título.
                     2 - Listar libros registrados.
@@ -55,46 +52,45 @@ public class Principal implements CommandLineRunner {
                     5 - Listar libros por idioma.
                     
                     0 - Salir.
-                    """;
-            System.out.println(MENU);
-            option = SCANNER.nextInt();
-            SCANNER.nextLine(); // Consume newline
+                    """);
 
-            switch (option) {
-                case 1:
-                    buscarLibroPorTitulo();
-                    break;
-                case 2:
-                    listarLibrosRegistrados();
-                    break;
-                case 3:
-                    listarAutoresRegistrados();
-                    break;
-                case 4:
-                    listarAutoresVivosEnAnio();
-                    break;
-                case 5:
-                    listarLibrosPorIdioma();
-                    break;
-                case 0:
-                    System.out.println("Saliendo...");
-                    break;
-                default:
-                    System.out.println("Opción inválida. Intente nuevamente.");
+            try {
+                opcion = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                switch (opcion) {
+                    case 1 -> buscarLibroPorTitulo();
+                    case 2 -> listarLibrosRegistrados();
+                    case 3 -> listarAutoresRegistrados();
+                    case 4 -> listarAutoresVivosEnAnio();
+                    case 5 -> listarLibrosPorIdioma();
+                    case 0 -> System.out.println("Saliendo...");
+                    default -> System.out.println("Opción inválida. Intente nuevamente.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Por favor, ingrese un número.");
+                scanner.nextLine(); // Limpiar el buffer de entrada
             }
         }
-        SCANNER.close();
     }
 
     private void buscarLibroPorTitulo() {
         System.out.println("Ingrese el título del libro que desea buscar:");
-        String titulo = SCANNER.nextLine();
+        String titulo = scanner.nextLine();
         String tituloCodificado = URLEncoder.encode(titulo, StandardCharsets.UTF_8);
         String url = URL_BASE + URL_SEARCH_BY_NAME + tituloCodificado;
         String datos = consumoAPI.obtenerDatos(url);
 
-        // Parsear la respuesta JSON y guardar en la base de datos
-        List<Libro> libros = conversor.obtenerDatos(datos, ResponseLibros.class).getResults();
+        try {
+            List<Libro> libros = conversor.obtenerDatos(datos, List.class);
+            guardarLibros(libros);
+            mostrarLibros(libros);
+        } catch (Exception e) {
+            System.out.println("Error al procesar los datos del API: " + e.getMessage());
+        }
+    }
+
+    private void guardarLibros(List<Libro> libros) {
         libros.forEach(libro -> {
             if (libro.getAutor() != null) {
                 Autor autorExistente = autorRepository.findByNombre(libro.getAutor().getNombre());
@@ -106,7 +102,9 @@ public class Principal implements CommandLineRunner {
             }
             libroRepository.save(libro);
         });
+    }
 
+    private void mostrarLibros(List<Libro> libros) {
         libros.forEach(libro -> System.out.println("Título: " + libro.getTitulo() + ", Autor: " + libro.getAutor().getNombre()));
     }
 
@@ -124,17 +122,24 @@ public class Principal implements CommandLineRunner {
     }
 
     private void listarAutoresVivosEnAnio() {
-        System.out.println("Ingrese el año:");
-        int anio = SCANNER.nextInt();
-        SCANNER.nextLine(); // Consume newline
-        List<Autor> autores = autorRepository.findAutoresVivosEnAnio(anio);
-        autores.forEach(autor -> System.out.println(autor.getNombre()));
+        try {
+            System.out.println("Ingrese el año:");
+            int anio = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            List<Autor> autores = autorRepository.findAutoresVivosEnAnio(anio);
+            autores.forEach(autor -> System.out.println(autor.getNombre()));
+        } catch (InputMismatchException e) {
+            System.out.println("Año inválido. Por favor, ingrese un número válido.");
+            scanner.nextLine(); // Limpiar el buffer de entrada
+        }
     }
 
     private void listarLibrosPorIdioma() {
         System.out.println("Ingrese el idioma (por ejemplo: 'en' para inglés): ");
-        String idioma = SCANNER.nextLine();
+        String idioma = scanner.nextLine();
         List<Libro> libros = libroRepository.findByIdioma(idioma);
         libros.forEach(libro -> System.out.println(libro.getTitulo() + " - Autor: " + libro.getAutor().getNombre()));
     }
 }
+
+

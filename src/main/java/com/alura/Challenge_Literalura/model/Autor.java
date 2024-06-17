@@ -2,6 +2,7 @@ package com.alura.Challenge_Literalura.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Autor {
     private String nombre;
 
     @JsonAlias("birth_year")
-    private int fechaNacimiento;
+    private Integer fechaNacimiento;
 
     @JsonAlias("death_year")
     private Integer fechaFallecimiento;

@@ -2,6 +2,7 @@ package com.alura.Challenge_Literalura.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +22,9 @@ public class Libro {
 
     @Column(name = "idioma")
     private String idioma;
+
+    @Column(name = "descargas")
+    private Integer descargas;
 
     // Getters y setters
     public Long getId() {
@@ -45,6 +49,22 @@ public class Libro {
 
     public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    public String getIdioma() {
+        return idioma;
+    }
+
+    public void setIdioma(String idioma) {
+        this.idioma = idioma;
+    }
+
+    public Integer getDescargas() {
+        return descargas;
+    }
+
+    public void setDescargas(Integer descargas) {
+        this.descargas = descargas;
     }
 }
 
