@@ -94,7 +94,7 @@ Obtiene y muestra los 10 libros más descargados registrados en la base de datos
 ![image](https://github.com/FanyUcles/LiterAlura_Challenge/assets/99224728/bb140b94-22b5-414c-909c-451d15276be8)  
 
 
-**Dentro de la Base de Datos **  
+**Dentro de la Base de Datos**  
 
 
 *Tabla Libros*
