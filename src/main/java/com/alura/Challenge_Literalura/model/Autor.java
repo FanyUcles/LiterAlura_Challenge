@@ -1,8 +1,6 @@
 package com.alura.Challenge_Literalura.model;
 
-
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity
@@ -28,8 +26,6 @@ public class Autor {
         this.fechaDeNacimiento = Integer.valueOf(datosAutor.fechaDeNacimiento());
         this.fechaDeMuerte = Integer.valueOf(datosAutor.fechaDeMuerte());
     }
-
-    // getters and setters
 
     public List<Libro> getLibros() {
         return libros;

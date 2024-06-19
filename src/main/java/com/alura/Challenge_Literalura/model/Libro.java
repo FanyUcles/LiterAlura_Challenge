@@ -2,7 +2,6 @@ package com.alura.Challenge_Literalura.model;
 
 import jakarta.persistence.*;
 
-
 @Entity
 @Table(name = "libros")
 public class Libro {
@@ -29,8 +28,6 @@ public class Libro {
         this.idiomas = obtenerPrimerIdioma(datosLibros);
         this.numeroDeDescargas = datosLibros.numeroDeDescargas();
     }
-
-    // seters and getters
 
 
     public Long getId() {

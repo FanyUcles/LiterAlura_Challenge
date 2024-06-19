@@ -11,7 +11,6 @@ public record AutorResponse(
         @JsonAlias("death_year") String fechaDeMuerte
 ) {
 
-
 }
 
 

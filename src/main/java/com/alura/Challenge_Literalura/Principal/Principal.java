@@ -8,10 +8,8 @@ import com.alura.Challenge_Literalura.repositorio.AutorRepository;
 import com.alura.Challenge_Literalura.repositorio.LibroRepository;
 import com.alura.Challenge_Literalura.service.ConsumoAPI;
 import com.alura.Challenge_Literalura.service.ConvierteDatos;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.List;
+
+import java.util.*;
 
 
 public class Principal {
@@ -52,6 +50,12 @@ public class Principal {
                 case 5:
                     listarLibrosPorIdioma();
                     break;
+                case 6:
+                    mostrarEstadisticasLibrosRegistrados();
+                    break;
+                case 7:
+                    mostrarTop10LibrosMasDescargados();
+                    break;
                 case 0:
                     System.out.println("Finalizando el programa");
                     break;
@@ -78,8 +82,8 @@ public class Principal {
                 3- Listar autores registrados
                 4- Listar autores vivos en un determinado año
                 5- listar libros por idioma
-                6- Estadisticas
-                7- Top 10 libros mas descargados
+                6- Estadisticas registradas
+                7- Top 10 libros mas descargados registrados
                 
                 0- Salir
                 -------------------------------------------
@@ -194,6 +198,43 @@ public class Principal {
         }
 
     }
+
+    private void mostrarEstadisticasLibrosRegistrados() {
+        List<Libro> todosLosLibros = libroRepository.findAll();
+
+        if (todosLosLibros.isEmpty()) {
+            System.out.println("No hay libros disponibles para mostrar estadísticas.");
+            return;
+        }
+
+        DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
+
+        for (Libro libro : todosLosLibros) {
+            stats.accept(libro.getNumeroDeDescargas());
+        }
+
+        System.out.println("Estadísticas de todos los libros registrados: ");
+        System.out.println("Cantidad de libros: " + stats.getCount());
+        System.out.println("Total de descargas: " + stats.getSum());
+        System.out.println("Promedio de descargas: " + stats.getAverage());
+        System.out.println("Máximo de descargas: " + stats.getMax());
+        System.out.println("Mínimo de descargas: " + stats.getMin());
+    }
+
+    private void mostrarTop10LibrosMasDescargados() {
+        List<Libro> topLibros = libroRepository.findTop10ByOrderByNumeroDeDescargasDesc();
+
+        if (topLibros.isEmpty()) {
+            System.out.println("No hay libros disponibles para mostrar estadísticas.");
+            return;
+        }
+
+        System.out.println("Top 10 libros más descargados:");
+        for (Libro libro : topLibros) {
+            System.out.println(libro);
+        }
+    }
+
 
 }
 
