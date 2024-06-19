@@ -1,38 +1,50 @@
 package com.alura.Challenge_Literalura.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
-@Table(name = "autor")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Table(name = "autores")
 public class Autor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long Id;
 
-    @JsonAlias("name")
+    @Column(unique = true)
     private String nombre;
-
-    @JsonAlias("birth_year")
-    private Integer fechaNacimiento;
-
-    @JsonAlias("death_year")
-    private Integer fechaFallecimiento;
+    private Integer fechaDeNacimiento;
+    private Integer fechaDeMuerte;
 
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
     private List<Libro> libros;
 
-    // Getters y setters
+    public Autor() {
+    }
+
+    public Autor(AutorResponse datosAutor) {
+        this.nombre = datosAutor.nombre();
+        this.fechaDeNacimiento = Integer.valueOf(datosAutor.fechaDeNacimiento());
+        this.fechaDeMuerte = Integer.valueOf(datosAutor.fechaDeMuerte());
+    }
+
+    // getters and setters
+
+    public List<Libro> getLibros() {
+        return libros;
+    }
+
+    public void setLibros(List<Libro> libros) {
+        this.libros = libros;
+    }
+
     public Long getId() {
-        return id;
+        return Id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        Id = id;
     }
 
     public String getNombre() {
@@ -43,29 +55,36 @@ public class Autor {
         this.nombre = nombre;
     }
 
-    public int getFechaNacimiento() {
-        return fechaNacimiento;
+    public Integer getFechaDeNacimiento() {
+        return fechaDeNacimiento;
     }
 
-    public void setFechaNacimiento(int fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void setFechaDeNacimiento(Integer fechaDeNacimiento) {
+        this.fechaDeNacimiento = fechaDeNacimiento;
     }
 
-    public Integer getFechaFallecimiento() {
-        return fechaFallecimiento;
+    public Integer getFechaDeMuerte() {
+        return fechaDeMuerte;
     }
 
-    public void setFechaFallecimiento(Integer fechaFallecimiento) {
-        this.fechaFallecimiento = fechaFallecimiento;
+    public void setFechaDeMuerte(Integer fechaDeMuerte) {
+        this.fechaDeMuerte = fechaDeMuerte;
     }
 
-    public List<Libro> getLibros() {
-        return libros;
+    public Autor obtenerPrimerAutor(LibroResponse datosLibro){
+        AutorResponse datosAutor = datosLibro.autor().get(0);
+        return new Autor(datosAutor);
     }
 
-    public void setLibros(List<Libro> libros) {
-        this.libros = libros;
+    @Override
+    public String toString() {
+        return "\n <<------------------------------------->>  " +
+                "\n <<---------------Autor----------------->>\n   "+
+                " Nombre :  " + nombre +
+                "\n  Año de naciemiento :  " + fechaDeNacimiento +
+                "\n Año de muerte :  " + fechaDeMuerte +
+                "\n <<------------------------------------->>  " +
+                "\n <<------------------------------------->>\n  "
+ ;
     }
 }
-
-

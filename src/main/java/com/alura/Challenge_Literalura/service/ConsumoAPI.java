@@ -8,21 +8,23 @@ import java.net.http.HttpResponse;
 
 import org.springframework.stereotype.Service;
 
-@Service
 public class ConsumoAPI {
     public String obtenerDatos(String url){
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client  = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .build();
+
         HttpResponse<String> response = null;
-        try {
+        try{
             response = client
                     .send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e){
             throw new RuntimeException(e);
         }
-        return response.body();
+        String json = response.body();
+        return json;
+
     }
 }
 
